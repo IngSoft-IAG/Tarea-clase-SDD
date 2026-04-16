@@ -76,6 +76,26 @@ dotnet test RoomBooking.sln
 dotnet run --project RoomBookingApi
 ```
 
+## Ejemplo para clase: Multi-Perspective Code Review
+Este repo incluye un ejemplo reusable de code review con subagentes de Copilot en VS Code.
+
+Archivos incluidos:
+- `.github/agents/thorough-reviewer.agent.md`: agente coordinador.
+- `.github/agents/correctness-reviewer.agent.md`: revisa logica y edge cases.
+- `.github/agents/code-quality-reviewer.agent.md`: revisa mantenibilidad.
+- `.github/agents/security-reviewer.agent.md`: revisa validacion y exposicion de datos.
+- `.github/agents/architecture-reviewer.agent.md`: revisa consistencia estructural.
+- `.github/prompts/multi-perspective-review.prompt.md`: slash command para ejecutar la review.
+
+Como mostrarlo en clase:
+1. Abrir el repo en VS Code con Copilot Chat habilitado.
+2. Ir a Agent mode en el chat.
+3. Ejecutar el prompt `/multi-perspective-review`.
+4. Pedir algo como: `review the pending changes in the reservation feature` o `review RoomBookingApi/Controllers/ReservationsController.cs and RoomBookingApi/Services/ReservationService.cs`.
+5. Mostrar que el agente coordinador lanza subagentes en paralelo, cada uno con una perspectiva distinta.
+
+La idea del ejemplo es mostrar un patron de orquestacion: un agente principal sintetiza hallazgos, mientras agentes mas chicos trabajan con contexto aislado para reducir sesgo entre perspectivas.
+
 ## Entregable esperado
 Cada grupo debe crear una PR desde una branch con sus numeros de alumnos e indicar lo siguiente en la descripcion de la PR:
 1. Una breve explicacion del workflow usado, indicando si siguieron una herramienta o uno propio.
