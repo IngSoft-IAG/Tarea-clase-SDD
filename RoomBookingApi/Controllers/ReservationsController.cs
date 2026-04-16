@@ -9,6 +9,18 @@ namespace RoomBookingApi.Controllers;
 [Route("api/[controller]")]
 public class ReservationsController(ReservationService reservationService) : ControllerBase
 {
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<ReservationDto>> GetById(int id)
+    {
+        var reservation = await reservationService.GetByIdAsync(id);
+        if (reservation is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(MapToDto(reservation));
+    }
+
     [HttpPost]
     public async Task<ActionResult<ReservationDto>> Create(ReservationDto dto)
     {
@@ -20,14 +32,21 @@ public class ReservationsController(ReservationService reservationService) : Con
             EndTime = dto.EndTime
         };
 
-        var created = await reservationService.CreateAsync(reservation);
-        if (created is null)
+        var creationResult = await reservationService.CreateAsync(reservation);
+        if (creationResult.Error is not null)
         {
-            return BadRequest("Invalid reservation data.");
+            return creationResult.Error switch
+            {
+                ReservationCreationError.InvalidTimeRange => BadRequest("EndTime must be greater than StartTime."),
+                ReservationCreationError.UserNotFound => NotFound("User not found."),
+                ReservationCreationError.RoomNotFoundOrInactive => NotFound("Room not found or inactive."),
+                ReservationCreationError.RoomAlreadyReserved => Conflict("Room already reserved for the selected time range."),
+                _ => BadRequest("Invalid reservation data.")
+            };
         }
 
-        var result = MapToDto(created);
-        return StatusCode(StatusCodes.Status201Created, result);
+        var result = MapToDto(creationResult.Reservation!);
+        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
     private static ReservationDto MapToDto(Reservation reservation)

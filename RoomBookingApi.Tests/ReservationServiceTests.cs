@@ -21,15 +21,16 @@ public class ReservationServiceTests
             EndTime = new DateTime(2026, 4, 17, 10, 0, 0, DateTimeKind.Utc)
         };
 
-        var created = await service.CreateAsync(reservation);
+        var result = await service.CreateAsync(reservation);
 
-        Assert.IsNotNull(created);
-        Assert.AreNotEqual(0, created.Id);
+        Assert.IsNotNull(result.Reservation);
+        Assert.IsNull(result.Error);
+        Assert.AreNotEqual(0, result.Reservation.Id);
         Assert.AreEqual(1, await dbContext.Reservations.CountAsync());
     }
 
     [TestMethod]
-    public async Task CreateAsync_WithOverlappingRoomReservation_ReturnsNull()
+    public async Task CreateAsync_WithOverlappingRoomReservation_FailsWithRoomAlreadyReservedError()
     {
         await using var dbContext = CreateDbContext();
         dbContext.Reservations.Add(new Reservation
@@ -50,9 +51,10 @@ public class ReservationServiceTests
             EndTime = new DateTime(2026, 4, 17, 10, 30, 0, DateTimeKind.Utc)
         };
 
-        var created = await service.CreateAsync(overlappingReservation);
+        var result = await service.CreateAsync(overlappingReservation);
 
-        Assert.IsNull(created);
+        Assert.IsNull(result.Reservation);
+        Assert.AreEqual(ReservationCreationError.RoomAlreadyReserved, result.Error);
         Assert.AreEqual(1, await dbContext.Reservations.CountAsync());
     }
 
