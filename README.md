@@ -77,7 +77,7 @@ dotnet run --project RoomBookingApi
 ```
 
 ## Entregable esperado
-Cada grupo debe entregar en una branch con un archivo ENTREGA.md de este repo con sus numeros de alumno:
+Cada grupo debe crear una PR desde una branch con sus numeros de alumnos e indicar lo siguiente en la descripcion de la PR:
 1. Una breve explicacion del workflow usado, indicando si siguieron una herramienta o uno propio.
 2. Implementacion del feature elegido en API + service + DTO(s).
 3. Tests derivados de los scenarios.
