@@ -26,6 +26,12 @@ Este repositorio se entrega con esqueleto para completar:
 ## Regla de oro
 Antes de escribir codigo o pedirle algo a Copilot, el grupo debe tener una spec escrita con al menos 2 scenarios Given/When/Then.
 
+Ademas, todo cambio debe cumplir la constitucion del proyecto en `.specify/memory/constitution.md`, en particular:
+- calidad de codigo verificable en review,
+- tests automatizados trazables a escenarios,
+- consistencia de experiencia de usuario en validaciones/errores,
+- y requisitos de performance medibles por feature.
+
 ## Features a elegir (minimo 2)
 1. Feature A - Crear Reserva
 2. Feature B - Cancelar Reserva
@@ -47,6 +53,7 @@ Independientemente de la herramienta o enfoque, el grupo debe:
 4. Implementar el feature elegido tomando la spec como fuente de verdad.
 5. Derivar los tests a partir de los scenarios de la spec.
 6. Validar que el codigo final cumple lo especificado.
+7. Verificar cumplimiento de la constitucion (calidad, testing, UX consistente y performance) antes de merge.
 
 ## Si usan una herramienta externa
 El entregable debe dejar claro:
