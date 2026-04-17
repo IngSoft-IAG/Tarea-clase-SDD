@@ -3,5 +3,8 @@ namespace RoomBookingApi.Domain;
 public class Reservation
 {
     public int Id { get; set; }
-    // Completar segun la spec que definan en clase.
+    public int RoomId { get; set; }
+    public int UserId { get; set; }
+    public DateTime StartTime { get; set; }
+    public DateTime EndTime { get; set; }
 }
