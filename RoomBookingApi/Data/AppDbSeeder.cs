@@ -24,5 +24,43 @@ public static class AppDbSeeder
         }
 
         dbContext.SaveChanges();
+
+        if (!dbContext.Reservations.Any())
+        {
+            var firstActiveRoom = dbContext.Rooms.FirstOrDefault(r => r.IsActive);
+            var firstUser = dbContext.Users.OrderBy(u => u.Id).FirstOrDefault();
+            var secondUser = dbContext.Users.OrderBy(u => u.Id).Skip(1).FirstOrDefault();
+
+            if (firstActiveRoom is not null && firstUser is not null)
+            {
+                var tomorrow10 = DateTime.UtcNow.Date.AddDays(1).AddHours(10);
+                dbContext.Reservations.Add(new Reservation
+                {
+                    RoomId = firstActiveRoom.Id,
+                    UserId = firstUser.Id,
+                    StartAt = tomorrow10,
+                    EndAt = tomorrow10.AddHours(1),
+                    Status = ReservationStatus.Active,
+                    CreatedAt = DateTime.UtcNow
+                });
+
+                if (secondUser is not null)
+                {
+                    var twoDays15 = DateTime.UtcNow.Date.AddDays(2).AddHours(15);
+                    dbContext.Reservations.Add(new Reservation
+                    {
+                        RoomId = firstActiveRoom.Id,
+                        UserId = secondUser.Id,
+                        StartAt = twoDays15,
+                        EndAt = twoDays15.AddHours(2),
+                        Status = ReservationStatus.Cancelled,
+                        CreatedAt = DateTime.UtcNow.AddHours(-1),
+                        CancelledAt = DateTime.UtcNow
+                    });
+                }
+
+                dbContext.SaveChanges();
+            }
+        }
     }
 }
