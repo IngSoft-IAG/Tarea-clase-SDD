@@ -2,7 +2,7 @@
 name: multi-perspective-review
 description: Run a parallel code review across correctness, quality, security, and architecture.
 agent: Thorough Reviewer
-tools: ['agent', 'read', 'search']
+tools: [read, agent, search]
 argument-hint: What should be reviewed? Example: the pending changes, a specific file, or the reservation feature.
 ---
 

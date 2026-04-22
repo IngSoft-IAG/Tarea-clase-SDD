@@ -26,8 +26,3 @@
 - GIVEN [contexto inicial]
 - WHEN [accion]
 - THEN [resultado esperado]
-
-## Plan de implementacion (Fase 2)
-- Archivos a crear:
-- Archivos a modificar:
-- Firma del metodo principal:

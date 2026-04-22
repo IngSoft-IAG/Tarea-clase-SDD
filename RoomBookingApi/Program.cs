@@ -11,7 +11,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseInMemoryDatabase("RoomBookingDb"));
 builder.Services.AddScoped<RoomService>();
 builder.Services.AddScoped<UserService>();
-builder.Services.AddScoped<ReservationService>();
+builder.Services.AddScoped<IReservationService, ReservationService>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
