@@ -59,6 +59,68 @@ public class ReservationsControllerTests
         Assert.AreEqual(createdAtUtc, dto.CreatedAtUtc);
     }
 
+    [TestMethod]
+    public async Task Create_WhenServiceReturnsInvalid_ReturnsBadRequestWithExactMessage()
+    {
+        const string errorMessage = "StartUtc and EndUtc must be UTC.";
+        var service = new FakeReservationService
+        {
+            CreateResult = ReservationCreateResult.Invalid(errorMessage)
+        };
+
+        var controller = new ReservationsController(service);
+        var actionResult = await controller.Create(CreateRequest());
+
+        var badRequest = actionResult.Result as BadRequestObjectResult;
+        Assert.IsNotNull(badRequest);
+        Assert.AreEqual(errorMessage, badRequest.Value);
+    }
+
+    [TestMethod]
+    public async Task Create_WhenServiceReturnsNotFound_ReturnsNotFoundWithExactMessage()
+    {
+        const string errorMessage = "User not found.";
+        var service = new FakeReservationService
+        {
+            CreateResult = ReservationCreateResult.NotFound(errorMessage)
+        };
+
+        var controller = new ReservationsController(service);
+        var actionResult = await controller.Create(CreateRequest());
+
+        var notFound = actionResult.Result as NotFoundObjectResult;
+        Assert.IsNotNull(notFound);
+        Assert.AreEqual(errorMessage, notFound.Value);
+    }
+
+    [TestMethod]
+    public async Task Create_WhenServiceReturnsConflict_ReturnsConflictWithExactMessage()
+    {
+        const string errorMessage = "Room is already reserved for the selected time range.";
+        var service = new FakeReservationService
+        {
+            CreateResult = ReservationCreateResult.Conflict(errorMessage)
+        };
+
+        var controller = new ReservationsController(service);
+        var actionResult = await controller.Create(CreateRequest());
+
+        var conflict = actionResult.Result as ConflictObjectResult;
+        Assert.IsNotNull(conflict);
+        Assert.AreEqual(errorMessage, conflict.Value);
+    }
+
+    private static CreateReservationDto CreateRequest()
+    {
+        return new CreateReservationDto
+        {
+            UserId = 1,
+            RoomId = 2,
+            StartUtc = new DateTime(2026, 4, 23, 9, 0, 0, DateTimeKind.Utc),
+            EndUtc = new DateTime(2026, 4, 23, 10, 0, 0, DateTimeKind.Utc)
+        };
+    }
+
     private sealed class FakeReservationService : IReservationService
     {
         public ReservationCreateResult CreateResult { get; set; } = ReservationCreateResult.Invalid("Not configured.");
