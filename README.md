@@ -1,72 +1,115 @@
-# Tarea practica - Spec-Driven Development
+# Tarea practica - SDLC con AI Skills
 
 ## Objetivo
-Aplicar Spec-Driven Development sobre un codebase real.
+Aplicar un ciclo de desarrollo completo asistido por AI skills, desde la ideacion hasta la implementacion, sobre un codebase real de reservas de salas.
 
 ## Stack del proyecto
-- .NET 10 Web API
+- .NET 8 Web API
 - EF Core InMemory
 - MSTest
 
-## Estructura entregada
-Este repositorio ya incluye:
-- CRUD funcional de salas en `RoomBookingApi/Controllers/RoomsController.cs`
-- CRUD funcional de usuarios en `RoomBookingApi/Controllers/UsersController.cs`
-- Entidades base en `RoomBookingApi/Domain`
-- DbContext en memoria y datos semilla en `RoomBookingApi/Data`
+## Estructura del proyecto
 
-Este repositorio se entrega con esqueleto para completar:
-- `RoomBookingApi/Domain/Reservation.cs`
-- `RoomBookingApi/Services/ReservationService.cs`
-- `RoomBookingApi/DTOs/ReservationDto.cs`
-- `RoomBookingApi/Controllers/ReservationsController.cs`
-- `RoomBookingApi.Tests/ReservationServiceTests.cs`
-- `spec.md`
+El repositorio ya incluye funcionalidad base:
+- CRUD completo de **Rooms** (`RoomsController`, `RoomService`)
+- CRUD completo de **Users** (`UsersController`, `UserService`)
+- Entidad `Reservation` definida pero con logica minima
+- Creacion basica de reservas sin validaciones
+- Consulta de reserva por ID
+- Seed data con 3 salas y 2 usuarios
+- Tests esqueleto con solo happy path
 
-## Regla de oro
-Antes de escribir codigo o pedirle algo a Copilot, el grupo debe tener una spec escrita con al menos 2 scenarios Given/When/Then.
+## Dinamica de trabajo
 
-## Features a elegir (minimo 2)
-1. Feature A - Crear Reserva
-2. Feature B - Cancelar Reserva
-3. Feature C - Consultar Disponibilidad
-4. Feature D - Listar Reservas del Usuario
+Los alumnos se dividen en equipos. Cada equipo elige **una feature** de la lista y la desarrolla siguiendo las 4 fases del workflow obligatorio.
 
-## Workflow de trabajo
-No es obligatorio seguir un workflow unico.
+## Features disponibles
 
-Cada grupo debe elegir una de estas opciones:
-1. Usar una herramienta vista en clase, por ejemplo GitHub Spec Kit, OpenSpec u otra similar, y seguir el workflow que propone esa herramienta.
-2. Trabajar sin herramienta externa, definiendo su propio workflow de Spec-Driven Development antes de implementar.
+Cada equipo elige **una** feature. No se pueden repetir features entre equipos.
 
-## Requisitos del workflow elegido
-Independientemente de la herramienta o enfoque, el grupo debe:
-1. Definir explicitamente que workflow va a seguir.
-2. Escribir una spec antes de implementar.
-3. Asegurarse de que la spec incluya al menos 2 scenarios Given/When/Then.
-4. Implementar el feature elegido tomando la spec como fuente de verdad.
-5. Derivar los tests a partir de los scenarios de la spec.
-6. Validar que el codigo final cumple lo especificado.
+### Feature 1 - Validacion completa al crear reserva
+La creacion de reservas existe pero no valida nada. Implementar todas las validaciones necesarias: que el usuario exista, que la sala exista, que la sala este activa, que el horario sea valido (inicio < fin), y que no haya conflicto con otras reservas en la misma sala.
 
-## Si usan una herramienta externa
-El entregable debe dejar claro:
-1. Que herramienta eligieron.
-2. Que workflow propone esa herramienta.
-3. Como aplicaron ese workflow en este proyecto.
+### Feature 2 - Cancelar reserva
+Permitir cancelar una reserva existente. Decidir si es un DELETE fisico o un cambio de estado (requiere agregar un campo `Status` a la entidad). Considerar que no se deberia poder cancelar una reserva que ya paso.
 
-## Si no usan una herramienta externa
-Deben definir y documentar su propio workflow.
+### Feature 3 - Consultar disponibilidad de una sala
+Dado un rango de fecha/hora, devolver si una sala esta disponible o listar los slots libres. Util para que un usuario pueda ver antes de reservar cuando hay lugar.
 
-Como minimo, ese workflow propio deberia responder:
-1. Como van a escribir y revisar la spec.
-2. Como van a decidir que archivos modificar.
-3. Como van a implementar con Copilot u otra asistencia.
-4. Como van a comprobar que cada scenario tiene cobertura.
-5. Como van a validar el resultado final.
+### Feature 4 - Listar reservas de un usuario
+Endpoint para obtener todas las reservas de un usuario especifico. Incluir filtros opcionales por rango de fechas y/o estado. Considerar paginacion si el equipo lo ve necesario.
+
+### Feature 5 - Reservas recurrentes
+Permitir crear una reserva que se repita (diaria, semanal) durante un rango de fechas. Validar conflictos en cada ocurrencia. Decidir si se almacenan como reservas individuales o como una entidad padre con ocurrencias.
+
+### Feature 6 - Notificaciones de conflicto
+Cuando se intenta crear una reserva que tiene conflicto, en lugar de solo devolver un error, devolver informacion util: que reserva genera el conflicto, quien la tiene, y sugerir los slots libres mas cercanos en esa misma sala.
+
+## Workflow obligatorio - 4 Fases
+
+Cada equipo debe seguir estas 4 fases en orden. Las primeras 3 fases son de definicion y planificacion; recien en la fase 4 se escribe codigo.
+
+---
+
+### Fase 1 - Ideacion y stress-test con `/grill-me`
+
+**Skill:** `grill-me`
+
+El equipo presenta su feature y la skill les hace preguntas una por una para forzarlos a pensar en todos los aspectos: edge cases, decisiones de diseno, impacto en el modelo de datos, que pasa si falla, etc.
+
+**Como ejecutarlo:**
+1. Escribir `/grill-me` y presentar la feature elegida.
+2. Responder cada pregunta hasta que el grilling termine.
+3. El resultado es una comprension profunda de la feature antes de escribir una sola linea.
+
+---
+
+### Fase 2 - PRD (Product Requirements Document) con `/to-prd`
+
+**Skill:** `to-prd`
+
+Con el contexto ganado en la Fase 1, generar un PRD formal que quede como GitHub Issue. El PRD incluye: problema, solucion, user stories, decisiones de implementacion, testing, y que queda fuera de scope.
+
+**Como ejecutarlo:**
+1. Despues de terminar el grill-me (o en una nueva sesion explicando el contexto), ejecutar `/to-prd`.
+2. La skill analiza el codebase y genera el PRD basado en la conversacion.
+3. Se crea un GitHub Issue con el PRD completo.
+
+---
+
+### Fase 3 - Plan de implementacion con `/to-issues`
+
+**Skill:** `to-issues`
+
+Tomar el PRD y descomponerlo en issues de implementacion independientes, organizados como slices verticales (cada issue atraviesa todas las capas: dominio, servicio, controller, tests).
+
+**Como ejecutarlo:**
+1. Ejecutar `/to-issues` referenciando el PRD creado en la Fase 2.
+2. La skill explora el codebase, propone los slices, y pregunta sobre granularidad y dependencias.
+3. Se crean los GitHub Issues con criterios de aceptacion y orden de dependencia.
+
+---
+
+### Fase 4 - Implementacion con `/implement-issue` y `@feature-tester`
+
+**Skill:** `implement-issue` | **Agente:** `feature-tester`
+
+Implementar cada issue usando la skill y el agente disponibles en el repositorio. La skill trae el issue de GitHub con `gh` y lo implementa siguiendo los patrones del codebase. Luego, el agente tester escribe los tests unitarios correspondientes.
+
+**Como ejecutarlo:**
+1. Ejecutar `/implement-issue` seguido del numero de issue (ej: `/implement-issue 5`). La skill usa `gh issue view` para leer los criterios de aceptacion y luego implementa.
+2. Revisar el codigo generado con el equipo.
+3. Usar `@feature-tester` para escribir los tests del codigo implementado.
+4. Verificar que todo compila y los tests pasan.
+
+**Entregable de la fase:** Codigo implementado y tests pasando.
+
+---
 
 ## Comandos utiles
-```powershell
-# Restaurar dependencias y compilar
+
+```bash
+# Compilar
 dotnet build RoomBooking.sln
 
 # Correr tests
@@ -76,29 +119,16 @@ dotnet test RoomBooking.sln
 dotnet run --project RoomBookingApi
 ```
 
-## Ejemplo para clase: Multi-Perspective Code Review
-Este repo incluye un ejemplo reusable de code review con subagentes de Copilot en VS Code.
+## Entregable final
 
-Archivos incluidos:
-- `.github/agents/thorough-reviewer.agent.md`: agente coordinador.
-- `.github/agents/correctness-reviewer.agent.md`: revisa logica y edge cases.
-- `.github/agents/code-quality-reviewer.agent.md`: revisa mantenibilidad.
-- `.github/agents/security-reviewer.agent.md`: revisa validacion y exposicion de datos.
-- `.github/agents/architecture-reviewer.agent.md`: revisa consistencia estructural.
-- `.github/prompts/multi-perspective-review.prompt.md`: slash command para ejecutar la review.
+Cada equipo debe crear una PR desde una branch con los nombres/numeros de los integrantes. La PR debe incluir:
 
-Como mostrarlo en clase:
-1. Abrir el repo en VS Code con Copilot Chat habilitado.
-2. Ir a Agent mode en el chat.
-3. Ejecutar el prompt `/multi-perspective-review`.
-4. Pedir algo como: `review the pending changes in the reservation feature` o `review RoomBookingApi/Controllers/ReservationsController.cs and RoomBookingApi/Services/ReservationService.cs`.
-5. Mostrar que el agente coordinador lanza subagentes en paralelo, cada uno con una perspectiva distinta.
+1. **En la descripcion de la PR:**
+   - Feature elegida.
+   - Link al Issue del PRD (Fase 2).
+   - Links a los Issues de implementacion (Fase 3).
+   - Breve reflexion (5-10 lineas): que descubrieron en el grill-me que no habian considerado, como cambio su plan original despues de pasar por las fases de definicion, y que harian diferente la proxima vez.
 
-La idea del ejemplo es mostrar un patron de orquestacion: un agente principal sintetiza hallazgos, mientras agentes mas chicos trabajan con contexto aislado para reducir sesgo entre perspectivas.
-
-## Entregable esperado
-Cada grupo debe crear una PR desde una branch con sus numeros de alumnos e indicar lo siguiente en la descripcion de la PR:
-1. Una breve explicacion del workflow usado, indicando si siguieron una herramienta o uno propio.
-2. Implementacion del feature elegido en API + service + DTO(s).
-3. Tests derivados de los scenarios.
-4. Breve nota final (3-5 lineas) con ajustes que harian a la spec.
+2. **En el codigo:**
+   - Implementacion completa de la feature.
+   - Tests derivados de los scenarios del PRD.
